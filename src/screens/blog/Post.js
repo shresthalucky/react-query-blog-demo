@@ -1,24 +1,22 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 
-//
-
-import usePost from '../../hooks/usePost'
+import { useGetPostByIdQuery } from '../../services/posts'
 
 export default function Post() {
   const { postId } = useParams()
-  const postQuery = usePost(postId)
+  const { data, error, isLoading } = useGetPostByIdQuery(postId)
 
   return (
     <>
-      {postQuery.isLoading ? (
+      {isLoading ? (
         <span>Loading...</span>
-      ) : postQuery.isError ? (
-        postQuery.error.message
+      ) : error ? (
+        error.message
       ) : (
         <div>
-          <h2>{postQuery.data.title}</h2>
-          <p>{postQuery.data.body}</p>
+          <h2>{data.title}</h2>
+          <p>{data.body}</p>
         </div>
       )}
     </>

@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom'
 //
 import usePosts from '../../hooks/usePosts'
 import { PostStyles } from '../../components/styled'
+import { useGetPostsQuery } from '../../services/posts'
 
 export default function Home() {
-  const postsQuery = usePosts()
+  // const postsQuery = usePosts()
+  const { data, error, isLoading } = useGetPostsQuery()
 
   return (
     <div>
@@ -18,12 +20,12 @@ export default function Home() {
           grid-gap: 1rem;
         `}
       >
-        {postsQuery.isLoading ? (
+        {isLoading ? (
           <span>Loading...</span>
-        ) : postsQuery.isError ? (
-          postsQuery.error.message
+        ) : error ? (
+          error.message
         ) : (
-          postsQuery.data.map((post) => (
+          data.map((post) => (
             <PostStyles as={Link} to={`./${post.id}`} key={post.id}>
               <h3>{post.title}</h3>
               <p>{post.body}</p>

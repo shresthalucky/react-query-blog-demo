@@ -1,26 +1,24 @@
 import React from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 
-//
-
-import usePost from '../../hooks/usePost'
-import useSavePost from '../../hooks/useSavePost'
-import useDeletePost from '../../hooks/useDeletePost'
-
 import PostForm from '../../components/PostForm'
 import { Loader } from '../../components/styled'
+import {
+  useDeletePostMutation,
+  useGetPostByIdQuery,
+  useEditPostMutation,
+} from '../../services/posts'
 
 export default function Post() {
   const { postId } = useParams()
   const navigate = useNavigate()
 
-  const postQuery = usePost(postId)
-  const [savePost, savePostInfo] = useSavePost()
-  const [deletePost, deletePostInfo] = useDeletePost()
+  const { data, isLoading } = useGetPostByIdQuery(postId)
+  const [savePost, savePostInfo] = useEditPostMutation()
+  const [deletePost, deletePostInfo] = useDeletePostMutation()
 
   const onSubmit = async (values) => {
     await savePost(values)
-    postQuery.fetch()
   }
 
   const onDelete = async () => {
@@ -30,18 +28,18 @@ export default function Post() {
 
   return (
     <>
-      {postQuery.isLoading ? (
+      {isLoading ? (
         <span>
           <Loader /> Loading...
         </span>
       ) : (
         <div>
-          <h3>{postQuery.data.title}</h3>
+          <h3>{data.title}</h3>
           <p>
-            <Link to={`/blog/${postQuery.data.id}`}>View Post</Link>
+            <Link to={`/blog/${data.id}`}>View Post</Link>
           </p>
           <PostForm
-            initialValues={postQuery.data}
+            initialValues={data}
             onSubmit={onSubmit}
             submitText={
               savePostInfo.isLoading
